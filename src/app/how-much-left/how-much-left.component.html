@@ -1,10 +1,11 @@
-<div class="text-center p-3">
-  <h1>How much left?</h1>
-</div>
-<div class="settings">
-  <button id="calculate-btn" class="btn btn-info" type="button">Calculate</button>
-  <label for="doNotCountToday" class="check">
-    <input type="checkbox" id="doNotCountToday" class="toggle-check" />
-    <span class="toggle-button">Do not count today</span>
-  </label>
+<div class="content">
+  <div class="settings">
+    <button id="calculate-btn" nbButton outline status="info" type="button"
+      (click)="calculate($event)">Calculate</button>
+    <nb-toggle labelPosition="right" [(checked)]="doNotCountToday">Do not count today</nb-toggle>
+  </div>
+  <input type="number" nbInput fullWidth centerText (keyup)="calculate($event)">
+  <p *ngIf="amount">
+    {{amount}}
+  </p>
 </div>

@@ -1,2 +1,18 @@
-<app-how-much-left></app-how-much-left>
-<router-outlet></router-outlet>
+<nb-layout>
+
+  <nb-layout-header fixed>
+    <h2>{{title}}</h2>
+  </nb-layout-header>
+
+  <nb-layout-column center>
+
+    <app-how-much-left></app-how-much-left>
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+    <!-- Insert footer here -->
+    <app-footer></app-footer>
+  </nb-layout-footer>
+
+</nb-layout>

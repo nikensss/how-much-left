@@ -1,0 +1,16 @@
+ul {
+  display: flex;
+  list-style: none;
+}
+
+li {
+  margin-right: 0.8rem;
+  border-radius: 100%;
+  background-color: white;
+  padding: 0.3rem;
+  transition: all 0.2s ease;
+}
+
+li:hover {
+  background-color: #ddd;
+}
