@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "how-much-left",
+      "public": "dist/how-much-left",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

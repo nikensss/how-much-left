@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "how-much-left": {
+      "hosting": {
+        "how-much-left": [
+          "how-much-left"
+        ]
+      }
+    }
+  }
+}
