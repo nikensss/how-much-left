@@ -1,11 +1,13 @@
 <div class="content">
   <div class="settings">
-    <button id="calculate-btn" nbButton outline status="info" type="button"
-      (click)="calculate($event)">Calculate</button>
-    <nb-toggle labelPosition="right" [(checked)]="doNotCountToday">Do not count today</nb-toggle>
+    <button nbButton outline status="info" type="button" (click)="calculate(inputNumber.value)">Calculate</button>
+    <nb-toggle labelPosition="right" (change)="calculate(inputNumber.value)" [(checked)]="doNotCountToday">Do not count
+      today</nb-toggle>
   </div>
-  <input type="number" nbInput fullWidth centerText (keyup)="calculate($event)">
-  <p *ngIf="amount">
-    {{amount}}
-  </p>
+  <input #inputNumber type="number" nbInput fullWidth (keyup)="calculate(inputNumber.value)">
+  <div *ngIf="inputNumber.value">
+    <p>Next pay day is: {{nextPayDay.toDateString()}}</p>
+    <p>({{differenceInDays}} days remaining)</p>
+    <p>You can spend {{averageToSpendPerDay}}&nbsp;&euro; per day</p>
+  </div>
 </div>
