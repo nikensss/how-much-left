@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { WeekDay } from '@angular/common';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-how-much-left',
@@ -14,7 +15,7 @@ export class HowMuchLeftComponent {
   public averageToSpendPerDay: string;
 
   public static readonly MS_IN_DAY = 24 * 60 * 60 * 1000;
-  constructor() {}
+  constructor(public auth: AngularFireAuth) {}
 
   calculate(val?: string): void {
     this.totalAmountLeft = parseFloat(val);

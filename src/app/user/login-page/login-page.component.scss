@@ -1,0 +1,18 @@
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  div {
+    text-align: center;
+
+    .google-login {
+      height: 3rem;
+
+      img {
+        height: 100%;
+        margin-right: 0.3rem;
+      }
+    }
+  }
+}

@@ -28,3 +28,7 @@
   <p>({{ differenceInDays }} days remaining)</p>
   <p>You can spend {{ averageToSpendPerDay }}&nbsp;&euro; per day</p>
 </div>
+
+<div *ngIf="auth.authState | async as user">
+  Logged in as {{ user.displayName || user.email }}
+</div>

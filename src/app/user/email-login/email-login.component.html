@@ -1,0 +1,126 @@
+<nb-card>
+  <div *ngIf="isSignup">
+    <h3>Create account</h3>
+    <button
+      nbButton
+      outline
+      status="primary"
+      shape="round"
+      (click)="changeType('login')"
+    >
+      Returning user?
+    </button>
+  </div>
+
+  <div *ngIf="isLogin">
+    <h3>Sign In</h3>
+    <button
+      nbButton
+      outline
+      status="primary"
+      shape="round"
+      (click)="changeType('signup')"
+    >
+      New user?
+    </button>
+  </div>
+
+  <div *ngIf="isPasswordReset">
+    <h3>Reset password</h3>
+    <button size="small" shape="round" nbButton (click)="changeType('login')">
+      &lArr; Back
+    </button>
+  </div>
+
+  <!-- by doing '[formGroup]="form"' we are binding this HTML form with the
+    form variable in our TS -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- email.valid calls the email() property accessor -->
+    <input
+      nbInput
+      formControlName="email"
+      type="email"
+      placeholder="Email"
+      autocomplete="off"
+      [attr.status]="email.valid ? 'basic' : 'danger'"
+    />
+    <!--
+      <mat-error *ngIf="email.invalid && email.dirty">
+        You must enter a valid email address
+      </mat-error>
+     -->
+
+    <!-- don't show the password field if user wants to reset password -->
+    <input
+      nbInput
+      formControlName="password"
+      type="password"
+      placeholder="Password"
+      autocomplete="off"
+      [attr.status]="email.valid ? 'basic' : 'danger'"
+      *ngIf="!isPasswordReset"
+    />
+    <!--
+      <mat-error *ngIf="password.invalid && password.dirty">
+        Password must be at least 6 characters long
+      </mat-error>
+     -->
+
+    <!-- show the passwordConfirm field only if the user wants to sign up -->
+    <input
+      *ngIf="isSignup"
+      nbInput
+      formControlName="passwordConfirm"
+      type="password"
+      placeholder="Confirm password"
+      autocomplete="off"
+      [attr.status]="passwordDoesMatch ? 'accent' : 'warn'"
+    />
+    <!--
+      <mat-error *ngIf="passwordConfirm.dirty && !passwordDoesMatch">
+        Passwords don't match
+      </mat-error>
+     -->
+
+    <nb-alert *ngIf="serverMessage" status="danger" class="server-error">{{
+      serverMessage
+    }}</nb-alert>
+
+    <div>
+      <button
+        *ngIf="isPasswordReset"
+        nbButton
+        outline
+        status="warning"
+        type="submit"
+        shape="round"
+        [disabled]="loading"
+      >
+        Send Reset Email
+      </button>
+
+      <!-- disable the submit button if the form is invalid, if the password
+    don't match or if we are in the loading state -->
+      <button
+        nbButton
+        outline
+        status="success"
+        *ngIf="!isPasswordReset"
+        type="submit"
+        shape="round"
+        [disabled]="form.invalid || !passwordDoesMatch || loading"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+
+  <button
+    nbButton
+    shape="round"
+    *ngIf="isLogin && !isPasswordReset"
+    (click)="changeType('reset')"
+  >
+    Forgot password?
+  </button>
+</nb-card>
