@@ -1,5 +1,6 @@
 <div class="flex justify-content-between align-items-center">
-  <h2 routerLink="/">How much left</h2>
+  <h2 *ngIf="!(isHandset$ | async)" routerLink="/">How much left</h2>
+  <img *ngIf="isHandset$ | async" class="logo" src="/assets/euro.svg" alt="" />
 
   <ul class="unstyled">
     <li>
