@@ -1,36 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { WeekDay } from '@angular/common';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { firestore } from 'firebase/app';
+
+interface AmountLeft {
+  uid: string;
+  amount: number;
+  date: firestore.FieldValue;
+}
 
 @Component({
   selector: 'app-how-much-left',
   templateUrl: './how-much-left.component.html',
   styleUrls: ['./how-much-left.component.scss'],
 })
-export class HowMuchLeftComponent {
+export class HowMuchLeftComponent implements OnInit {
   public doNotCountToday: boolean = false;
   public totalAmountLeft: number = 0;
   public nextPayDay: Date;
-  public differenceInDays: number = 0;
-  public averageToSpendPerDay: string;
+  public averageToSpendPerDay: number;
+  public canSave = false;
+  public saveButtonTitle = 'Save';
+  public unsubscribe: () => void;
+  public amounts: number[];
 
-  public static readonly MS_IN_DAY = 24 * 60 * 60 * 1000;
-  constructor(public auth: AngularFireAuth) {}
+  public static readonly MS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
-  calculate(val?: string): void {
+  constructor(public auth: AngularFireAuth, private db: AngularFirestore) {}
+
+  ngOnInit(): void {
+    //when a user is authenticated
+    this.auth.onAuthStateChanged((user) => {
+      if (user) {
+        //read the amountsleft collection and get the documents that belong to
+        //this user
+        this.db.collection<AmountLeft>('amountsleft', (ref) => {
+          const result = ref.where('uid', '==', user.uid).orderBy('date');
+          //remember the unsubscribe method, and get all amounts for this user
+          this.unsubscribe = result.onSnapshot((querySnapshot) => {
+            console.log('snapshot received!');
+            this.amounts = querySnapshot.docs.map((doc) => doc.data().amount);
+          });
+          return result;
+        });
+      } else {
+        //if the user auth state changed to unauthenticated, unsubscribe if
+        //the method exists
+        if (this.unsubscribe) {
+          this.amounts = [];
+          this.unsubscribe();
+          this.unsubscribe = null;
+        }
+      }
+    });
+  }
+
+  calculate(val: string): void {
     this.totalAmountLeft = parseFloat(val);
 
-    if (isNaN(this.totalAmountLeft)) {
-      console.log('Not a number');
+    if (isNaN(this.totalAmountLeft) || !isFinite(this.totalAmountLeft)) {
       this.totalAmountLeft = 0;
+      this.canSave = false;
       return;
     }
 
     this.nextPayDay = this.findNextPayDay();
-    this.differenceInDays = this.dayDifference();
-    this.averageToSpendPerDay = (
-      this.totalAmountLeft / this.differenceInDays
-    ).toFixed(2);
+    this.averageToSpendPerDay = this.totalAmountLeft / this.differenceInDays();
+
+    if (
+      !isNaN(this.averageToSpendPerDay) &&
+      isFinite(this.averageToSpendPerDay)
+    ) {
+      this.canSave = true;
+    }
   }
 
   findNextPayDay() {
@@ -60,16 +103,45 @@ export class HowMuchLeftComponent {
     return nextPayDay;
   }
 
-  dayDifference() {
+  differenceInDays() {
     const now = new Date();
-    if (this.doNotCountToday)
-      now.setTime(now.getTime() + HowMuchLeftComponent.MS_IN_DAY);
+    if (this.doNotCountToday) {
+      now.setTime(now.getTime() + HowMuchLeftComponent.MS_IN_A_DAY);
+    }
 
     const diff = Math.ceil(
       (this.nextPayDay.getTime() - now.getTime()) /
-        HowMuchLeftComponent.MS_IN_DAY
+        HowMuchLeftComponent.MS_IN_A_DAY
     );
 
     return diff;
+  }
+
+  async save() {
+    this.canSave = false;
+    this.saveButtonTitle = 'Saving...';
+    try {
+      console.log('Saving to firestore!');
+      //get the current user
+      const user = await this.auth.currentUser;
+      //add a new document to the amountsleft collection with the user's uid,
+      //the remaining amount, and the date of today
+      const docRef = await this.db.collection<AmountLeft>('amountsleft').add({
+        uid: user.uid,
+        amount: this.averageToSpendPerDay,
+        date: firestore.FieldValue.serverTimestamp(),
+      });
+
+      this.saveButtonTitle = 'Success!';
+      return docRef.id;
+    } catch (ex) {
+      this.saveButtonTitle = 'Error!';
+      console.error(ex);
+    } finally {
+      setTimeout(() => {
+        this.saveButtonTitle = 'Save';
+        this.canSave = true;
+      }, 1500);
+    }
   }
 }

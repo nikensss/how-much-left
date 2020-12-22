@@ -36,8 +36,27 @@ input[type='number'] {
   -moz-appearance: textfield; /* Firefox */
 }
 
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+
+  * {
+    text-align: center;
+  }
+  .amounts {
+    flex: 1 1 100%;
+  }
+}
+
 @media screen and (max-width: 900px) {
   .content {
     padding: 0;
+  }
+
+  .flex {
+    * {
+      flex: 1 1 100%;
+    }
   }
 }

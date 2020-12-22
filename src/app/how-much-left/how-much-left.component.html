@@ -25,10 +25,20 @@
 />
 <div *ngIf="inputNumber.value" class="text-center">
   <p>Next pay day is: {{ nextPayDay.toDateString() }}</p>
-  <p>({{ differenceInDays }} days remaining)</p>
-  <p>You can spend {{ averageToSpendPerDay }}&nbsp;&euro; per day</p>
+  <p>({{ differenceInDays() }} days remaining)</p>
+  <p>You can spend {{ averageToSpendPerDay.toFixed(2) }}&nbsp;&euro; per day</p>
 </div>
 
-<div *ngIf="auth.authState | async as user">
-  Logged in as {{ user.displayName || user.email }}
+<div *ngIf="auth.authState | async as user" class="flex">
+  <p class="logged-user">Logged in as {{ user.displayName || user.email }}</p>
+  <button
+    class="save-button"
+    [disabled]="!canSave"
+    nbButton
+    status="success"
+    (click)="save()"
+  >
+    {{ saveButtonTitle }}
+  </button>
+  <p class="amounts">{{ amounts?.join() }}</p>
 </div>
