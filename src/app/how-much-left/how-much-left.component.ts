@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { WeekDay } from '@angular/common';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -23,11 +23,15 @@ export class HowMuchLeftComponent implements OnInit {
   public canSave = false;
   public saveButtonTitle = 'Save';
   public unsubscribe: () => void;
-  public amounts: number[];
+  public amounts: number[] = [];
 
   public static readonly MS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
-  constructor(public auth: AngularFireAuth, private db: AngularFirestore) {}
+  constructor(
+    public auth: AngularFireAuth,
+    private db: AngularFirestore,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
     //when a user is authenticated
@@ -39,8 +43,10 @@ export class HowMuchLeftComponent implements OnInit {
           const result = ref.where('uid', '==', user.uid).orderBy('date');
           //remember the unsubscribe method, and get all amounts for this user
           this.unsubscribe = result.onSnapshot((querySnapshot) => {
-            console.log('snapshot received!');
-            this.amounts = querySnapshot.docs.map((doc) => doc.data().amount);
+            this.ngZone.run(() => {
+              this.amounts = querySnapshot.docs.map((doc) => doc.data().amount);
+              console.log('snapshot received!', { amounts: this.amounts });
+            });
           });
           return result;
         });
