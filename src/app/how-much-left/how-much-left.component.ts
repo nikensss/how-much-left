@@ -135,13 +135,15 @@ export class HowMuchLeftComponent implements OnInit {
       const user = await this.auth.currentUser;
       //add a new document to the amountsleft collection with the user's uid,
       //the remaining amount, and the date of today
-      const docRef = await this.db.collection(`users/${user.uid}/amounts`).add({
-        amount: this.averageToSpendPerDay,
-        date: firestore.FieldValue.serverTimestamp(),
-      });
+      const amountsRef = await this.db
+        .collection(`users/${user.uid}/amounts`)
+        .add({
+          amount: this.averageToSpendPerDay,
+          date: firestore.FieldValue.serverTimestamp(),
+        });
 
       this.saveButtonTitle = 'Success!';
-      return docRef.id;
+      return amountsRef.id;
     } catch (ex) {
       this.saveButtonTitle = 'Error!';
       console.error(ex);
