@@ -37,14 +37,17 @@ export class HowMuchLeftComponent implements OnInit {
     //when a user is authenticated
     this.auth.onAuthStateChanged((user) => {
       if (user) {
-        //read the amountsleft collection and get the documents that belong to
-        //this user
-        this.db.collection<AmountLeft>('amountsleft', (ref) => {
-          const result = ref.where('uid', '==', user.uid).orderBy('date');
+        //read the amounts of the current user and get the documents that belong
+        //to this user
+        this.db.collection(`users/${user.uid}/amounts`, (ref) => {
+          const result = ref.orderBy('date');
           //remember the unsubscribe method, and get all amounts for this user
           this.unsubscribe = result.onSnapshot((querySnapshot) => {
             this.ngZone.run(() => {
-              this.amounts = querySnapshot.docs.map((doc) => doc.data().amount);
+              this.amounts = querySnapshot.docs.map((doc) => {
+                console.log(doc.data());
+                return doc.data().amount;
+              });
               console.log('snapshot received!', { amounts: this.amounts });
             });
           });
@@ -132,8 +135,7 @@ export class HowMuchLeftComponent implements OnInit {
       const user = await this.auth.currentUser;
       //add a new document to the amountsleft collection with the user's uid,
       //the remaining amount, and the date of today
-      const docRef = await this.db.collection<AmountLeft>('amountsleft').add({
-        uid: user.uid,
+      const docRef = await this.db.collection(`users/${user.uid}/amounts`).add({
         amount: this.averageToSpendPerDay,
         date: firestore.FieldValue.serverTimestamp(),
       });
