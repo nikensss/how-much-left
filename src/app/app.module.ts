@@ -11,7 +11,7 @@ import {
   NbButtonModule,
   NbToggleModule,
   NbInputModule,
-  NbIconModule,
+  NbIconModule
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
@@ -22,6 +22,8 @@ import { HeaderComponent } from './header/header.component';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { PlotComponent } from './components/plot/plot.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     HeaderComponent,
     HowMuchLeftComponent,
     FooterComponent,
+    PlotComponent
   ],
   imports: [
     BrowserModule,
@@ -42,14 +45,19 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     NbInputModule,
     NbIconModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
+      enabled: environment.production
     }),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production
+    }),
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts')
+    })
   ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

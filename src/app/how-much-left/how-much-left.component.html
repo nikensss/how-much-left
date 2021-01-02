@@ -2,28 +2,30 @@
   <button
     nbButton
     outline
-    status="info"
+    status="success"
     type="button"
-    (click)="calculate(inputNumber.value)"
+    (click)="calculate(amountLeft.value)"
   >
     Calculate
   </button>
   <nb-toggle
     labelPosition="right"
-    (change)="calculate(inputNumber.value)"
+    (change)="calculate(amountLeft.value)"
     [(checked)]="doNotCountToday"
   >
     Do not count today
   </nb-toggle>
 </div>
 <input
-  #inputNumber
+  #amountLeft
   type="number"
+  status="info"
   nbInput
   fullWidth
-  (keyup)="calculate(inputNumber.value)"
+  (keyup)="calculate(amountLeft.value)"
+  (keyup.enter)="save()"
 />
-<div *ngIf="inputNumber.value" class="text-center">
+<div *ngIf="amountLeft.value" class="text-center">
   <p>Next pay day is: {{ nextPayDay.toDateString() }}</p>
   <p>({{ differenceInDays() }} days remaining)</p>
   <p>You can spend {{ averageToSpendPerDay.toFixed(2) }}&nbsp;&euro; per day</p>
@@ -40,5 +42,5 @@
   >
     {{ saveButtonTitle }}
   </button>
-  <p class="amounts">{{ amounts.join() }}</p>
+  <app-plot></app-plot>
 </div>

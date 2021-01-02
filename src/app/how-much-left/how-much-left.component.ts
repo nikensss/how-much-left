@@ -15,55 +15,17 @@ interface AmountLeft {
   templateUrl: './how-much-left.component.html',
   styleUrls: ['./how-much-left.component.scss'],
 })
-export class HowMuchLeftComponent implements OnInit {
+export class HowMuchLeftComponent {
   public doNotCountToday: boolean = false;
   public totalAmountLeft: number = 0;
   public nextPayDay: Date;
   public averageToSpendPerDay: number;
   public canSave = false;
   public saveButtonTitle = 'Save';
-  public unsubscribe: () => void;
-  public amounts: number[] = [];
 
   public static readonly MS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
-  constructor(
-    public auth: AngularFireAuth,
-    private db: AngularFirestore,
-    private ngZone: NgZone
-  ) {}
-
-  ngOnInit(): void {
-    //when a user is authenticated
-    this.auth.onAuthStateChanged((user) => {
-      if (user) {
-        //read the amounts of the current user and get the documents that belong
-        //to this user
-        this.db.collection(`users/${user.uid}/amounts`, (ref) => {
-          const result = ref.orderBy('date');
-          //remember the unsubscribe method, and get all amounts for this user
-          this.unsubscribe = result.onSnapshot((querySnapshot) => {
-            this.ngZone.run(() => {
-              this.amounts = querySnapshot.docs.map((doc) => {
-                console.log(doc.data());
-                return doc.data().amount;
-              });
-              console.log('snapshot received!', { amounts: this.amounts });
-            });
-          });
-          return result;
-        });
-      } else {
-        //if the user auth state changed to unauthenticated, unsubscribe if
-        //the method exists
-        if (this.unsubscribe) {
-          this.amounts = [];
-          this.unsubscribe();
-          this.unsubscribe = null;
-        }
-      }
-    });
-  }
+  constructor(public auth: AngularFireAuth, private db: AngularFirestore) {}
 
   calculate(val: string): void {
     this.totalAmountLeft = parseFloat(val);
