@@ -33,4 +33,9 @@ h2 {
 .logo {
   // object-fit: scale-down;
   width: 3rem;
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
 }

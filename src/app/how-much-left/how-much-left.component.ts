@@ -13,7 +13,7 @@ interface AmountLeft {
 @Component({
   selector: 'app-how-much-left',
   templateUrl: './how-much-left.component.html',
-  styleUrls: ['./how-much-left.component.scss'],
+  styleUrls: ['./how-much-left.component.scss']
 })
 export class HowMuchLeftComponent {
   public doNotCountToday: boolean = false;
@@ -30,7 +30,11 @@ export class HowMuchLeftComponent {
   calculate(val: string): void {
     this.totalAmountLeft = parseFloat(val);
 
-    if (isNaN(this.totalAmountLeft) || !isFinite(this.totalAmountLeft)) {
+    if (
+      isNaN(this.totalAmountLeft) ||
+      !isFinite(this.totalAmountLeft) ||
+      this.totalAmountLeft < 0
+    ) {
       this.totalAmountLeft = 0;
       this.canSave = false;
       return;
@@ -101,7 +105,7 @@ export class HowMuchLeftComponent {
         .collection(`users/${user.uid}/amounts`)
         .add({
           amount: this.averageToSpendPerDay,
-          date: firestore.FieldValue.serverTimestamp(),
+          date: firestore.FieldValue.serverTimestamp()
         });
 
       this.saveButtonTitle = 'Success!';

@@ -25,14 +25,19 @@
   (keyup)="calculate(amountLeft.value)"
   (keyup.enter)="save()"
 />
-<div *ngIf="amountLeft.value" class="text-center">
+<div *ngIf="totalAmountLeft > 0" class="text-center">
   <p>Next pay day is: {{ nextPayDay.toDateString() }}</p>
   <p>({{ differenceInDays() }} days remaining)</p>
   <p>You can spend {{ averageToSpendPerDay.toFixed(2) }}&nbsp;&euro; per day</p>
 </div>
 
 <div *ngIf="auth.authState | async as user" class="flex">
-  <p class="logged-user">Logged in as {{ user.displayName || user.email }}</p>
+  <p class="logged-user">
+    Logged in as
+    {{
+      user.displayName ? user.displayName + ' (' + user.email + ')' : user.email
+    }}
+  </p>
   <button
     class="save-button"
     [disabled]="!canSave"

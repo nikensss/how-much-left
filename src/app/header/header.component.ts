@@ -3,7 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import {
   BreakpointObserver,
   Breakpoints,
-  BreakpointState,
+  BreakpointState
 } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { map, shareReplay } from 'rxjs/operators';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
   public isHandset$: Observable<boolean> = this.breakpointObserver
@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.onAuthStateChanged((user) => {
-      this.label = user ? 'Logout' : 'Login';
+      this.label = user ? 'My HML' : 'Login';
     });
   }
 }
