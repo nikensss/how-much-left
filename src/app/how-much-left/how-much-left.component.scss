@@ -55,8 +55,15 @@ input[type='number'] {
   }
 
   .flex {
-    * {
+    p,
+    .operations {
       flex: 1 1 100%;
+    }
+
+    .operations {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
     }
   }
 }

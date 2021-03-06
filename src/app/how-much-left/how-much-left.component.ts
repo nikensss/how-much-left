@@ -3,6 +3,7 @@ import { WeekDay } from '@angular/common';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { firestore } from 'firebase/app';
+import { AmountDocument } from '../interfaces/AmountDocument.interface';
 
 interface AmountLeft {
   uid: string;
@@ -15,19 +16,35 @@ interface AmountLeft {
   templateUrl: './how-much-left.component.html',
   styleUrls: ['./how-much-left.component.scss']
 })
-export class HowMuchLeftComponent {
+export class HowMuchLeftComponent implements OnInit {
   public doNotCountToday: boolean = false;
   public totalAmountLeft: number = 0;
   public nextPayDay: Date;
   public averageToSpendPerDay: number;
+
   public canSave = false;
   public saveButtonTitle = 'Save';
+
   public canPop = false;
   public popButtonTitle = 'Pop';
 
   public static readonly MS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
   constructor(public auth: AngularFireAuth, private db: AngularFirestore) {}
+
+  ngOnInit(): void {
+    this.disableOperations();
+  }
+
+  private disableOperations() {
+    this.canSave = false;
+    this.canPop = false;
+  }
+
+  private enableOperations() {
+    this.canSave = true;
+    this.canPop = true;
+  }
 
   calculate(val: string): void {
     this.totalAmountLeft = parseFloat(val);
@@ -38,8 +55,7 @@ export class HowMuchLeftComponent {
       this.totalAmountLeft < 0
     ) {
       this.totalAmountLeft = 0;
-      this.canSave = false;
-      this.canPop = false;
+      this.disableOperations();
       return;
     }
 
@@ -50,8 +66,7 @@ export class HowMuchLeftComponent {
       !isNaN(this.averageToSpendPerDay) &&
       isFinite(this.averageToSpendPerDay)
     ) {
-      this.canSave = true;
-      this.canPop = true;
+      this.enableOperations();
     }
   }
 
@@ -97,7 +112,7 @@ export class HowMuchLeftComponent {
   }
 
   async save() {
-    this.canSave = false;
+    this.disableOperations();
     this.saveButtonTitle = 'Saving...';
     try {
       console.log('Saving to firestore!');
@@ -106,12 +121,11 @@ export class HowMuchLeftComponent {
       //add a new document to the amountsleft collection with the user's uid,
       //the remaining amount, and the date of today
       const amountsRef = await this.db
-        .collection(`users/${user.uid}/amounts`)
+        .collection<AmountDocument>(`users/${user.uid}/amounts`)
         .add({
           amount: this.averageToSpendPerDay,
           date: firestore.FieldValue.serverTimestamp()
         });
-
       this.saveButtonTitle = 'Success!';
       return amountsRef.id;
     } catch (ex) {
@@ -120,25 +134,41 @@ export class HowMuchLeftComponent {
     } finally {
       setTimeout(() => {
         this.saveButtonTitle = 'Save';
-        this.canSave = true;
+        this.enableOperations();
       }, 1500);
     }
   }
 
   async pop() {
-    this.canSave = false;
-    this.canPop = false;
-    this.popButtonTitle = 'Removing last...';
+    this.disableOperations();
+    this.popButtonTitle = 'Removing...';
 
     try {
+      const user = await this.auth.currentUser;
+
+      const docs = (
+        await this.db
+          .collection<AmountDocument>(`users/${user.uid}/amounts`, (ref) =>
+            ref.orderBy('date', 'desc').limit(1)
+          )
+          .get()
+          .toPromise()
+      ).docs;
+      if (!docs[0]) {
+        return;
+      }
+      const idOfLastDoc = docs[0].id;
+      this.db
+        .collection<AmountDocument>(`users/${user.uid}/amounts`)
+        .doc(`${idOfLastDoc}`)
+        .delete();
     } catch (ex) {
       this.popButtonTitle = 'Error!';
       console.error(ex);
     } finally {
       setTimeout(() => {
         this.popButtonTitle = 'Pop';
-        this.canSave = true;
-        this.canPop = true;
+        this.enableOperations();
       }, 1500);
     }
   }

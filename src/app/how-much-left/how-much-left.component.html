@@ -38,23 +38,25 @@
       user.displayName ? user.displayName + ' (' + user.email + ')' : user.email
     }}
   </p>
-  <button
-    class="save-button"
-    [disabled]="!canSave"
-    nbButton
-    status="success"
-    (click)="save()"
-  >
-    {{ saveButtonTitle }}
-  </button>
-  <button
-    class="pop-button"
-    [disabled]="!canPop"
-    nbButton
-    status="danger"
-    (click)="pop()"
-  >
-    {{ popButtonTitle }}
-  </button>
+  <div class="operations">
+    <button
+      class="save-button"
+      [disabled]="!canSave"
+      nbButton
+      status="success"
+      (click)="save()"
+    >
+      {{ saveButtonTitle }}
+    </button>
+    <button
+      class="pop-button"
+      [disabled]="!canPop"
+      nbButton
+      status="danger"
+      (click)="pop()"
+    >
+      {{ popButtonTitle }}
+    </button>
+  </div>
   <app-plot></app-plot>
 </div>
