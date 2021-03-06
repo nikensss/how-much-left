@@ -32,12 +32,6 @@
 </div>
 
 <div *ngIf="auth.authState | async as user" class="flex">
-  <p class="logged-user">
-    Logged in as
-    {{
-      user.displayName ? user.displayName + ' (' + user.email + ')' : user.email
-    }}
-  </p>
   <div class="operations">
     <button
       class="save-button"

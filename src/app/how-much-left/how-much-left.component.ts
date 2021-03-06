@@ -28,22 +28,43 @@ export class HowMuchLeftComponent implements OnInit {
   public canPop = false;
   public popButtonTitle = 'Pop';
 
+  private unsubscribe: () => void;
+
   public static readonly MS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
-  constructor(public auth: AngularFireAuth, private db: AngularFirestore) {}
+  constructor(
+    public auth: AngularFireAuth,
+    private db: AngularFirestore,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
     this.disableOperations();
+    this.auth.onAuthStateChanged((user) => {
+      if (!user && !this.unsubscribe) return;
+
+      if (!user && this.unsubscribe) {
+        this.unsubscribe();
+        this.unsubscribe = null;
+        return;
+      }
+
+      this.db.collection<AmountDocument>(`users/${user.uid}/amounts`, (ref) => {
+        const result = ref.orderBy('date');
+        this.unsubscribe = result.onSnapshot((snapshot) => {
+          this.ngZone.run(() => (this.canPop = snapshot.docs.length > 0));
+        });
+        return result;
+      });
+    });
   }
 
   private disableOperations() {
     this.canSave = false;
-    this.canPop = false;
   }
 
   private enableOperations() {
     this.canSave = true;
-    this.canPop = true;
   }
 
   calculate(val: string): void {
@@ -75,22 +96,15 @@ export class HowMuchLeftComponent implements OnInit {
     now.setHours(0, 0, 0, 0);
     //getMonth() returns a 0-based index, but the month in new Date() requires
     //a 1-based index
-    let monthNextPayDay =
-      now.getDate() < 24 ? now.getMonth() + 1 : now.getMonth() + 2;
-    let yearNextPayDay;
-    if (monthNextPayDay <= 12) {
-      yearNextPayDay = now.getFullYear();
-    } else {
+    let monthNextPayDay = now.getMonth() + (now.getDate() < 24 ? 1 : 2);
+    let yearNextPayDay = now.getFullYear();
+    if (monthNextPayDay > 12) {
       monthNextPayDay = 1;
-      yearNextPayDay = now.getFullYear() + 1;
+      yearNextPayDay += 1;
     }
-    const nextPayDay = new Date(
-      yearNextPayDay + '/' + monthNextPayDay + '/' + 24
-    );
-    while (
-      nextPayDay.getDay() === WeekDay.Saturday ||
-      nextPayDay.getDay() === WeekDay.Sunday
-    ) {
+    const nextPayDay = new Date(`${yearNextPayDay}/${monthNextPayDay}/${24}`);
+
+    while (nextPayDay.getDay() > WeekDay.Saturday) {
       nextPayDay.setDate(nextPayDay.getDate() - 1);
     }
 
@@ -154,11 +168,11 @@ export class HowMuchLeftComponent implements OnInit {
           .get()
           .toPromise()
       ).docs;
-      if (!docs[0]) {
-        return;
-      }
+
+      if (docs.length === 0) return;
+
       const idOfLastDoc = docs[0].id;
-      this.db
+      await this.db
         .collection<AmountDocument>(`users/${user.uid}/amounts`)
         .doc(`${idOfLastDoc}`)
         .delete();

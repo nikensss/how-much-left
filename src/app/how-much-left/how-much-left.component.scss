@@ -44,9 +44,13 @@ input[type='number'] {
   * {
     text-align: center;
   }
-  .amounts {
-    flex: 1 1 100%;
-  }
+}
+
+.operations {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-grow: 1;
 }
 
 @media screen and (max-width: 900px) {
@@ -58,12 +62,6 @@ input[type='number'] {
     p,
     .operations {
       flex: 1 1 100%;
-    }
-
-    .operations {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
     }
   }
 }

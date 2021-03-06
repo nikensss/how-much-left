@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.onAuthStateChanged((user) => {
-      this.label = user ? 'My HML' : 'Login';
+      this.label = user ? `${user.email}` : 'Login';
     });
   }
 }
