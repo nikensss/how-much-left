@@ -47,5 +47,14 @@
   >
     {{ saveButtonTitle }}
   </button>
+  <button
+    class="pop-button"
+    [disabled]="!canPop"
+    nbButton
+    status="danger"
+    (click)="pop()"
+  >
+    {{ popButtonTitle }}
+  </button>
   <app-plot></app-plot>
 </div>

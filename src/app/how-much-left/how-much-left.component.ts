@@ -22,6 +22,8 @@ export class HowMuchLeftComponent {
   public averageToSpendPerDay: number;
   public canSave = false;
   public saveButtonTitle = 'Save';
+  public canPop = false;
+  public popButtonTitle = 'Pop';
 
   public static readonly MS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
@@ -37,6 +39,7 @@ export class HowMuchLeftComponent {
     ) {
       this.totalAmountLeft = 0;
       this.canSave = false;
+      this.canPop = false;
       return;
     }
 
@@ -48,6 +51,7 @@ export class HowMuchLeftComponent {
       isFinite(this.averageToSpendPerDay)
     ) {
       this.canSave = true;
+      this.canPop = true;
     }
   }
 
@@ -117,6 +121,24 @@ export class HowMuchLeftComponent {
       setTimeout(() => {
         this.saveButtonTitle = 'Save';
         this.canSave = true;
+      }, 1500);
+    }
+  }
+
+  async pop() {
+    this.canSave = false;
+    this.canPop = false;
+    this.popButtonTitle = 'Removing last...';
+
+    try {
+    } catch (ex) {
+      this.popButtonTitle = 'Error!';
+      console.error(ex);
+    } finally {
+      setTimeout(() => {
+        this.popButtonTitle = 'Pop';
+        this.canSave = true;
+        this.canPop = true;
       }, 1500);
     }
   }

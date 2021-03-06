@@ -9,7 +9,6 @@ import { AngularFirestore } from '@angular/fire/firestore';
 })
 export class PlotComponent implements OnInit {
   public options = {};
-
   private unsubscribe: () => void;
 
   constructor(
@@ -29,14 +28,22 @@ export class PlotComponent implements OnInit {
           //remember the unsubscribe method, and get all amounts for this user
           this.unsubscribe = result.onSnapshot((querySnapshot) => {
             this.ngZone.run(() => {
-              const d = querySnapshot.docs.slice(-30).reduce(
-                (t, doc) => {
-                  t.x.push(doc.data().date?.toDate().toLocaleDateString());
-                  t.y.push(doc.data().amount);
-                  return t;
-                },
-                { x: [], y: [] }
-              );
+              const d = querySnapshot.docs
+                .slice(-30)
+                .sort((a, b) => {
+                  const dateA = a.get('date').toDate();
+                  const dateB = b.get('date').toDate();
+
+                  return dateA - dateB;
+                })
+                .reduce(
+                  (t, doc) => {
+                    t.x.push(doc.data().date?.toDate().toLocaleDateString());
+                    t.y.push(doc.data().amount);
+                    return t;
+                  },
+                  { x: [], y: [] }
+                );
 
               this.options = {
                 tooltip: {},
