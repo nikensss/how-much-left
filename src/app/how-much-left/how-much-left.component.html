@@ -26,8 +26,10 @@
   (keyup.enter)="save()"
 />
 <div *ngIf="totalAmountLeft > 0" class="text-center">
-  <p>Next pay day is: {{ nextPayDay.toDateString() }}</p>
-  <p>({{ differenceInDays() }} days remaining)</p>
+  <p>
+    Next pay day is: {{ nextPayDay.toDateString() }} ({{ differenceInDays() }}
+    days remaining)
+  </p>
   <p>You can spend {{ averageToSpendPerDay.toFixed(2) }}&nbsp;&euro; per day</p>
 </div>
 
@@ -40,7 +42,7 @@
       status="success"
       (click)="save()"
     >
-      {{ saveButtonTitle }}
+      Save
     </button>
     <button
       class="pop-button"
@@ -49,7 +51,7 @@
       status="danger"
       (click)="pop()"
     >
-      {{ popButtonTitle }}
+      Pop
     </button>
   </div>
   <app-plot></app-plot>

@@ -45,7 +45,7 @@ export class PlotComponent implements OnInit {
               .sort((a, b) => a.get('date') - b.get('date'))
               .reduce(
                 (t, doc) => {
-                  t.x.push(doc.get('date').toDate());
+                  t.x.push(doc.get('date').toDate().toLocaleDateString());
                   t.y.push(doc.get('amount'));
                   return t;
                 },

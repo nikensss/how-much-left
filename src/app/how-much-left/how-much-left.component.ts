@@ -24,10 +24,7 @@ export class HowMuchLeftComponent implements OnInit {
   public averageToSpendPerDay: number;
 
   public canSave = false;
-  public saveButtonTitle = 'Save';
-
   public canPop = false;
-  public popButtonTitle = 'Pop';
 
   private unsubscribe: () => void;
 
@@ -41,7 +38,7 @@ export class HowMuchLeftComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.disableOperations();
+    this.canSave = false;
     this.auth.onAuthStateChanged((user) => {
       if (!user && !this.unsubscribe) return;
 
@@ -54,19 +51,14 @@ export class HowMuchLeftComponent implements OnInit {
       this.db.collection<AmountDocument>(`users/${user.uid}/amounts`, (ref) => {
         const result = ref.orderBy('date');
         this.unsubscribe = result.onSnapshot((snapshot) => {
-          this.ngZone.run(() => (this.canPop = snapshot.docs.length > 0));
+          this.ngZone.run(() => {
+            if (snapshot.metadata.hasPendingWrites) return;
+            this.canPop = snapshot.docs.length > 0;
+          });
         });
         return result;
       });
     });
-  }
-
-  private disableOperations() {
-    this.canSave = false;
-  }
-
-  private enableOperations() {
-    this.canSave = true;
   }
 
   calculate(val: string): void {
@@ -78,7 +70,7 @@ export class HowMuchLeftComponent implements OnInit {
       this.totalAmountLeft < 0
     ) {
       this.totalAmountLeft = 0;
-      this.disableOperations();
+      this.canSave = false;
       return;
     }
 
@@ -89,7 +81,7 @@ export class HowMuchLeftComponent implements OnInit {
       !isNaN(this.averageToSpendPerDay) &&
       isFinite(this.averageToSpendPerDay)
     ) {
-      this.enableOperations();
+      this.canSave = true;
     }
   }
 
@@ -119,22 +111,17 @@ export class HowMuchLeftComponent implements OnInit {
       now.setTime(now.getTime() + HowMuchLeftComponent.MS_IN_A_DAY);
     }
 
-    const diff = Math.ceil(
-      (this.nextPayDay.getTime() - now.getTime()) /
+    return Math.ceil(
+      (this.findNextPayDay().getTime() - now.getTime()) /
         HowMuchLeftComponent.MS_IN_A_DAY
     );
-
-    return diff;
   }
 
   async save() {
-    this.disableOperations();
+    this.canSave = false;
     try {
       console.log('Saving to firestore!');
-      //get the current user
       const user = await this.auth.currentUser;
-      //add a new document to the amountsleft collection with the user's uid,
-      //the remaining amount, and the date of today
       const amountsRef = await this.db
         .collection<AmountDocument>(`users/${user.uid}/amounts`)
         .add({
@@ -143,45 +130,41 @@ export class HowMuchLeftComponent implements OnInit {
         });
 
       this.toast.success('Saved!');
-      return amountsRef.id;
     } catch (ex) {
       console.error(ex);
     } finally {
-      setTimeout(() => {
-        this.enableOperations();
-      }, 1500);
+      this.canSave = true;
     }
   }
 
   async pop() {
-    this.disableOperations();
+    this.canPop = false;
 
     try {
+      console.log('Deleting from firestore!');
+      const mostRecentDoc = await this.getMostRecentDocument();
+      if (!mostRecentDoc) return;
+
       const user = await this.auth.currentUser;
-
-      const docs = (
-        await this.db
-          .collection<AmountDocument>(`users/${user.uid}/amounts`, (ref) =>
-            ref.orderBy('date', 'desc').limit(1)
-          )
-          .get()
-          .toPromise()
-      ).docs;
-
-      if (docs.length === 0) return;
-
-      const idOfMostRecentDocument = docs[0].id;
       await this.db
         .collection<AmountDocument>(`users/${user.uid}/amounts`)
-        .doc(`${idOfMostRecentDocument}`)
+        .doc(`${mostRecentDoc.id}`)
         .delete();
       this.toast.danger('Amount removed');
     } catch (ex) {
       console.error(ex);
-    } finally {
-      setTimeout(() => {
-        this.enableOperations();
-      }, 1500);
     }
+  }
+
+  async getMostRecentDocument() {
+    const user = await this.auth.currentUser;
+    const queryResult = await this.db
+      .collection<AmountDocument>(`users/${user.uid}/amounts`, (ref) =>
+        ref.orderBy('date', 'desc').limit(1)
+      )
+      .get()
+      .toPromise();
+
+    return queryResult.docs[0];
   }
 }
