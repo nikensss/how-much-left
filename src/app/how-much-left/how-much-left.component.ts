@@ -4,6 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { firestore } from 'firebase/app';
 import { AmountDocument } from '../interfaces/AmountDocument.interface';
+import { NbToastrService } from '@nebular/theme';
 
 interface AmountLeft {
   uid: string;
@@ -35,7 +36,8 @@ export class HowMuchLeftComponent implements OnInit {
   constructor(
     public auth: AngularFireAuth,
     private db: AngularFirestore,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private toast: NbToastrService
   ) {}
 
   ngOnInit(): void {
@@ -127,7 +129,6 @@ export class HowMuchLeftComponent implements OnInit {
 
   async save() {
     this.disableOperations();
-    this.saveButtonTitle = 'Saving...';
     try {
       console.log('Saving to firestore!');
       //get the current user
@@ -140,14 +141,13 @@ export class HowMuchLeftComponent implements OnInit {
           amount: this.averageToSpendPerDay,
           date: firestore.FieldValue.serverTimestamp()
         });
-      this.saveButtonTitle = 'Success!';
+
+      this.toast.success('Saved!');
       return amountsRef.id;
     } catch (ex) {
-      this.saveButtonTitle = 'Error!';
       console.error(ex);
     } finally {
       setTimeout(() => {
-        this.saveButtonTitle = 'Save';
         this.enableOperations();
       }, 1500);
     }
@@ -155,7 +155,6 @@ export class HowMuchLeftComponent implements OnInit {
 
   async pop() {
     this.disableOperations();
-    this.popButtonTitle = 'Removing...';
 
     try {
       const user = await this.auth.currentUser;
@@ -171,17 +170,16 @@ export class HowMuchLeftComponent implements OnInit {
 
       if (docs.length === 0) return;
 
-      const idOfLastDoc = docs[0].id;
+      const idOfMostRecentDocument = docs[0].id;
       await this.db
         .collection<AmountDocument>(`users/${user.uid}/amounts`)
-        .doc(`${idOfLastDoc}`)
+        .doc(`${idOfMostRecentDocument}`)
         .delete();
+      this.toast.danger('Amount removed');
     } catch (ex) {
-      this.popButtonTitle = 'Error!';
       console.error(ex);
     } finally {
       setTimeout(() => {
-        this.popButtonTitle = 'Pop';
         this.enableOperations();
       }, 1500);
     }

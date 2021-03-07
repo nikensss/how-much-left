@@ -11,7 +11,9 @@ import {
   NbButtonModule,
   NbToggleModule,
   NbInputModule,
-  NbIconModule
+  NbIconModule,
+  NbToastrModule,
+  NbGlobalLogicalPosition
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
@@ -44,6 +46,12 @@ import { PlotComponent } from './components/plot/plot.component';
     NbToggleModule,
     NbInputModule,
     NbIconModule,
+    NbToastrModule.forRoot({
+      preventDuplicates: true,
+      duration: 1500,
+      destroyByClick: true,
+      duplicatesBehaviour: 'all'
+    }),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production
     }),
