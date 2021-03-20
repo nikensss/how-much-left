@@ -25,12 +25,11 @@
   (keyup)="calculate(amountLeft.value)"
   (keyup.enter)="save()"
 />
-<div *ngIf="totalAmountLeft > 0" class="text-center">
-  <p>
-    Next pay day is: {{ nextPayDay.toDateString() }} ({{ differenceInDays() }}
-    days remaining)
+<div class="text-center">
+  <p>{{ nextPayDay.toDateString() }} ({{ differenceInDays() }} days left)</p>
+  <p *ngIf="totalAmountLeft > 0">
+    You can spend {{ averageToSpendPerDay.toFixed(2) }}&nbsp;&euro; per day
   </p>
-  <p>You can spend {{ averageToSpendPerDay.toFixed(2) }}&nbsp;&euro; per day</p>
 </div>
 
 <div *ngIf="auth.authState | async as user" class="flex">

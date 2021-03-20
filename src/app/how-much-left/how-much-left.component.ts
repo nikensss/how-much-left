@@ -20,7 +20,6 @@ interface AmountLeft {
 export class HowMuchLeftComponent implements OnInit {
   public doNotCountToday: boolean = false;
   public totalAmountLeft: number = 0;
-  public nextPayDay: Date;
   public averageToSpendPerDay: number;
 
   public canSave = false;
@@ -74,7 +73,6 @@ export class HowMuchLeftComponent implements OnInit {
       return;
     }
 
-    this.nextPayDay = this.findNextPayDay();
     this.averageToSpendPerDay = this.totalAmountLeft / this.differenceInDays();
 
     if (
@@ -85,7 +83,7 @@ export class HowMuchLeftComponent implements OnInit {
     }
   }
 
-  findNextPayDay() {
+  get nextPayDay() {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     //getMonth() returns a 0-based index, but the month in new Date() requires
@@ -112,7 +110,7 @@ export class HowMuchLeftComponent implements OnInit {
     }
 
     return Math.ceil(
-      (this.findNextPayDay().getTime() - now.getTime()) /
+      (this.nextPayDay.getTime() - now.getTime()) /
         HowMuchLeftComponent.MS_IN_A_DAY
     );
   }
@@ -122,7 +120,7 @@ export class HowMuchLeftComponent implements OnInit {
     try {
       console.log('Saving to firestore!');
       const user = await this.auth.currentUser;
-      const amountsRef = await this.db
+      await this.db
         .collection<AmountDocument>(`users/${user.uid}/amounts`)
         .add({
           amount: this.averageToSpendPerDay,
