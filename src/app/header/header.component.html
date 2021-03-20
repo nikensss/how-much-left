@@ -10,6 +10,11 @@
 
   <ul class="unstyled">
     <li>
+      <button nbButton (click)="switchTheme()">
+        <nb-icon [icon]="icon"></nb-icon>
+      </button>
+    </li>
+    <li>
       <button nbButton routerLink="/login">
         {{ label }}
       </button>

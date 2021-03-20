@@ -7,6 +7,7 @@ import {
 } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { NbThemeService } from '@nebular/theme';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,9 @@ import { map, shareReplay } from 'rxjs/operators';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  public theme: 'cosmic' | 'corporate' = 'cosmic';
+  public icon: 'moon' | 'sun-outline' = 'moon';
+
   public isHandset$: Observable<boolean> = this.breakpointObserver
     .observe([Breakpoints.Handset])
     .pipe(
@@ -24,12 +28,21 @@ export class HeaderComponent implements OnInit {
   public label = 'Login';
   constructor(
     public auth: AngularFireAuth,
-    public breakpointObserver: BreakpointObserver
-  ) {}
+    public breakpointObserver: BreakpointObserver,
+    private themeService: NbThemeService
+  ) {
+    this.themeService.changeTheme(this.theme);
+  }
 
   ngOnInit(): void {
     this.auth.onAuthStateChanged((user) => {
       this.label = user ? 'My HML' : 'Login';
     });
+  }
+
+  switchTheme() {
+    this.theme = this.theme === 'cosmic' ? 'corporate' : 'cosmic';
+    this.icon = this.icon === 'moon' ? 'sun-outline' : 'moon';
+    this.themeService.changeTheme(this.theme);
   }
 }

@@ -12,8 +12,7 @@ import {
   NbToggleModule,
   NbInputModule,
   NbIconModule,
-  NbToastrModule,
-  NbGlobalLogicalPosition
+  NbToastrModule
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
@@ -39,7 +38,7 @@ import { PlotComponent } from './components/plot/plot.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    NbThemeModule.forRoot({ name: 'dark' }),
+    NbThemeModule.forRoot({ name: 'cosmic' }),
     NbLayoutModule,
     NbEvaIconsModule,
     NbButtonModule,
