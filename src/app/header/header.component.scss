@@ -2,9 +2,12 @@
   width: 100%;
 }
 
+.w-100 {
+  width: 100%;
+}
+
 .flex {
   display: flex;
-  width: 100%;
 }
 
 .justify-content-between {
@@ -33,9 +36,18 @@ h2 {
   }
 }
 
+.logo-container {
+  cursor: pointer;
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
+}
 .logo {
   // object-fit: scale-down;
   width: 3rem;
+  margin-right: 0.6rem;
 
   &:active,
   &:focus {

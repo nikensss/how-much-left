@@ -60,6 +60,35 @@ export class HowMuchLeftComponent implements OnInit {
     });
   }
 
+  get now() {
+    const n = new Date();
+    if (this.doNotCountToday) {
+      n.setTime(n.getTime() + HowMuchLeftComponent.MS_IN_A_DAY);
+    }
+    return n;
+  }
+
+  get nextPayDay() {
+    const now = this.now;
+    now.setHours(0, 0, 0, 0);
+    const PAY_DATE = 24;
+    //getMonth() returns a 0-based index, but the month in new Date() requires
+    //a 1-based index, that's why either 1 or 2 needs to be added.
+    let month = now.getMonth() + (now.getDate() < PAY_DATE ? 1 : 2);
+    let year = now.getFullYear();
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+    const nextPayDay = new Date(`${year}/${month}/${PAY_DATE}`);
+
+    while (nextPayDay.getDay() > WeekDay.Saturday) {
+      nextPayDay.setDate(nextPayDay.getDate() - 1);
+    }
+
+    return nextPayDay;
+  }
+
   calculate(val: string): void {
     this.totalAmountLeft = parseFloat(val);
 
@@ -83,34 +112,9 @@ export class HowMuchLeftComponent implements OnInit {
     }
   }
 
-  get nextPayDay() {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    //getMonth() returns a 0-based index, but the month in new Date() requires
-    //a 1-based index
-    let monthNextPayDay = now.getMonth() + (now.getDate() < 24 ? 1 : 2);
-    let yearNextPayDay = now.getFullYear();
-    if (monthNextPayDay > 12) {
-      monthNextPayDay = 1;
-      yearNextPayDay += 1;
-    }
-    const nextPayDay = new Date(`${yearNextPayDay}/${monthNextPayDay}/${24}`);
-
-    while (nextPayDay.getDay() > WeekDay.Saturday) {
-      nextPayDay.setDate(nextPayDay.getDate() - 1);
-    }
-
-    return nextPayDay;
-  }
-
   differenceInDays() {
-    const now = new Date();
-    if (this.doNotCountToday) {
-      now.setTime(now.getTime() + HowMuchLeftComponent.MS_IN_A_DAY);
-    }
-
     return Math.ceil(
-      (this.nextPayDay.getTime() - now.getTime()) /
+      (this.nextPayDay.getTime() - this.now.getTime()) /
         HowMuchLeftComponent.MS_IN_A_DAY
     );
   }

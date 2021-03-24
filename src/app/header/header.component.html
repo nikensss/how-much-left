@@ -1,13 +1,8 @@
-<div class="flex justify-content-between align-items-center">
-  <h2 *ngIf="!(isHandset$ | async)" routerLink="/">How much left</h2>
-  <img
-    *ngIf="isHandset$ | async"
-    routerLink="/"
-    class="logo"
-    src="/assets/euro.svg"
-    alt=""
-  />
-
+<div class="w-100 flex justify-content-between align-items-center">
+  <div routerLink="/" class="flex align-items-center logo-container">
+    <img class="logo" src="/assets/euro.svg" alt="" />
+    <h2 *ngIf="!(isHandset$ | async)">How much left</h2>
+  </div>
   <ul class="unstyled">
     <li>
       <button nbButton (click)="switchTheme()">
