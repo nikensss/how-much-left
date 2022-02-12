@@ -77,14 +77,18 @@ export class HowMuchLeftComponent implements OnInit {
     let payDay = this.preferredPayDay;
     //getMonth() returns a 0-based index, but the month in new Date() requires
     //a 1-based index, that's why either 1 or 2 needs to be added.
-    let month = now.getMonth() + (now.getDate() < payDay ? 1 : 2);
+    let month = now.getMonth() + (now.getDate() < payDay ? 0 : 1);
     let year = now.getFullYear();
-    if (month > 12) {
-      month = 1;
+    if (month >= 12) {
+      month = 0;
       year += 1;
     }
-    const nextPayDay = new Date(`${year}/${month}/${PAY_DATE}`);
 
+    // if we are passed pay day, we know we are gonna get our salary next month
+    // already; and then, in that month, we need to make sure that the pay day
+    // exists, in case it is a shorter month or something
+    payDay = Math.min(payDay, this.daysInMonth(year, month));
+    const nextPayDay = new Date(year, month, payDay);
 
     while ([WeekDay.Saturday, WeekDay.Sunday].includes(nextPayDay.getDay())) {
       nextPayDay.setDate(nextPayDay.getDate() - 1);
@@ -172,5 +176,15 @@ export class HowMuchLeftComponent implements OnInit {
       .toPromise();
 
     return queryResult.docs[0];
+  }
+
+  // Month in JavaScript is 0-indexed (January is 0, February is 1, etc),
+  // but by using 0 as the day it will give us the last day of the prior
+  // month. So passing in 1 as the month number will return the last day
+  // of January, not February. Since we are using Date objects, we have to
+  // offset the month value by one to get the days in the given month using a
+  // 0-based index.
+  private daysInMonth(year: number, month: number): number {
+    return new Date(year, month + 1, 0).getDate();
   }
 }
