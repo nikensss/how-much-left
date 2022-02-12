@@ -16,3 +16,17 @@ main {
     }
   }
 }
+
+.preferences {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .pay-day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3rem;
+  }
+}

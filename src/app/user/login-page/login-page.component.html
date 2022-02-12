@@ -25,6 +25,20 @@
     <p>
       Logged in as <strong>{{ user.email }}</strong>
     </p>
+    <section class="preferences">
+      <div class="pay-day">
+        <p>Pay day:</p>
+        <nb-select
+          placeholder="Select Showcase"
+          [(selected)]="payDay"
+          (selectedChange)="payDaySelected($event)"
+        >
+          <nb-option *ngFor="let day of daysInMonth" [value]="day">
+            {{ day }}
+          </nb-option>
+        </nb-select>
+      </div>
+    </section>
     <button nbButton status="primary" (click)="afAuth.signOut()">Logout</button>
   </div>
 </main>

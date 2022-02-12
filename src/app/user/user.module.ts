@@ -10,6 +10,7 @@ import {
   NbButtonModule,
   NbCardModule,
   NbInputModule,
+  NbSelectModule
 } from '@nebular/theme';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -17,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   declarations: [
     LoginPageComponent,
     EmailLoginComponent,
-    GoogleSigninDirective,
+    GoogleSigninDirective
   ],
   imports: [
     CommonModule,
@@ -27,6 +28,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     NbAlertModule,
     NbButtonModule,
     NbInputModule,
-  ],
+    NbSelectModule
+  ]
 })
 export class UserModule {}
