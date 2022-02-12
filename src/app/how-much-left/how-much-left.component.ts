@@ -1,15 +1,15 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { WeekDay } from '@angular/common';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { firestore } from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AmountDocument } from '../interfaces/AmountDocument.interface';
 import { NbToastrService } from '@nebular/theme';
+import { FieldValue, serverTimestamp } from 'firebase/firestore';
 
 interface AmountLeft {
   uid: string;
   amount: number;
-  date: firestore.FieldValue;
+  date: FieldValue;
 }
 
 @Component({
@@ -128,7 +128,7 @@ export class HowMuchLeftComponent implements OnInit {
         .collection<AmountDocument>(`users/${user.uid}/amounts`)
         .add({
           amount: this.averageToSpendPerDay,
-          date: firestore.FieldValue.serverTimestamp()
+          date: serverTimestamp()
         });
 
       this.toast.success('Saved!');
