@@ -16,7 +16,7 @@
     "@angular/common": "~12.2.16",
     "@angular/compiler": "~12.2.16",
     "@angular/core": "~12.2.16",
-    "@angular/fire": "^6.1.4",
+    "@angular/fire": "^7.2.1",
     "@angular/forms": "~12.2.16",
     "@angular/platform-browser": "~12.2.16",
     "@angular/platform-browser-dynamic": "~12.2.16",
@@ -26,12 +26,13 @@
     "@nebular/theme": "^8.0.0",
     "echarts": "^5.0.0",
     "eva-icons": "^1.1.2",
-    "firebase": "^7.0 || ^8.0",
+    "firebase": "^9.4.0",
     "ngx-echarts": "^8.0.1",
     "resize-observer-polyfill": "^1.5.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "rxfire": "^6.0.0"
   },
   "devDependencies": {
     "@angular-devkit/architect": "0.1202.16",

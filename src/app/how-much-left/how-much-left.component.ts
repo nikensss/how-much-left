@@ -1,8 +1,8 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { WeekDay } from '@angular/common';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { firestore } from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { firestore } from 'firebase/compat/app';
 import { AmountDocument } from '../interfaces/AmountDocument.interface';
 import { NbToastrService } from '@nebular/theme';
 

@@ -1,4 +1,4 @@
-import { firestore } from 'firebase';
+import { firestore } from 'firebase/compat';
 
 export interface AmountDocument {
   amount: number;

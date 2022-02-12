@@ -1,6 +1,6 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AmountDocument } from '../../interfaces/AmountDocument.interface';
 
 @Component({
